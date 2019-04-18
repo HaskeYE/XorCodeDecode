@@ -21,14 +21,34 @@ public class CoderStream {
             String str = scan.nextLine();
             String[] pieces = str.split("\\s+");
             for (String piece : pieces) {
+                int j = 0;
                 sbKey.delete(0, sbKey.length());
                 if (piece.length() > key.length()) {
+                    for (int i = sbKey.length(); i < piece.length(); i++) {
+                        if (i % key.length() != 0) {
+                            sbKey.append(key.charAt(i % key.length()));
+                        } else {
+                            sbKey.append(key.charAt(key.length() - 1));
+                        }
+                    }
+                    fw.write(" ");
 
                 } else {
-                    sbKey.delete(piece.length()-1, key.length());
-
+                    StringBuilder sb = new StringBuilder();
+                    for (int i = 0; i < piece.length(); i++) {
+                        int c = (int) piece.charAt(i);
+                        int k = (int) sbKey.charAt(j);
+                        c = c ^ k;
+                        fw.write((char) c);
+                    }
                 }
+                fw.write(" ");
+
             }
+            fw.write("\n");
         }
+
+        fw.close();
+        fr.close();
     }
 }
