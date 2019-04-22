@@ -1,24 +1,69 @@
 package com.haskeye.coderstream;
 
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.util.Scanner;
+import org.kohsuke.args4j.Argument;
+import org.kohsuke.args4j.CmdLineException;
+import org.kohsuke.args4j.CmdLineParser;
+import org.kohsuke.args4j.Option;
+
+import java.io.Console;
+import java.io.IOException;
 
 public class CoderStream {
-    private void code(File file, String key) throws Exception {
-        File newFile = new File("C:/Users/user/IdeaProjects/XorCodeDecode");
 
-        FileReader fr = new FileReader(file);
-        Scanner scan = new Scanner(fr);
+    @Option(name = "-c", forbids = "-d", usage = "code")
+    private boolean coding;
+    private String key;
+
+    @Option(name = "-d", forbids = "-c", usage = "decode")
+    private boolean uncoding;
+    private String keyNew;
+
+    @Option(name = "-o", usage = "output")
+    private String output;
+
+    @Argument
+    private String input;
+
+    private void doMain(String[] args) throws IOException {
+        CmdLineParser parser = new CmdLineParser(this);
+        try {
+            parser.parseArgument(args);
+        } catch (CmdLineException e) {
+            System.out.println("meh");
+        }
+
+        try {
+            if (coding) FileWorker.write(output, code(FileWorker.read(input), key));
+            else FileWorker.write(output, code(FileWorker.read(input), keyNew));
+        } catch (Exception e) {
+            throw new IllegalArgumentException();
+        }
+    }
+
+
+    public static void main(String[] args) {
+        CoderStream instance = new CoderStream();
+
+        Console console = System.console();
+        String[] str = console.readLine().split(" ");
+
+        try {
+            instance.doMain(str);
+        } catch (IOException e) {
+            System.out.println(e);
+        }
+    }
+
+    private String code(String file, String key) throws Exception {
+
         StringBuilder sbKey = new StringBuilder();
         sbKey.append(key);
 
-        FileWriter fw = new FileWriter(newFile);
         StringBuilder text = new StringBuilder();
 
-        while (scan.hasNextLine()) {
-            String str = scan.nextLine();
+        String[] strs = file.split("\n");
+
+        for (String str : strs) {
             String[] pieces = str.split("\\s+");
             for (String piece : pieces) {
                 int j = 0;
@@ -31,24 +76,27 @@ public class CoderStream {
                             sbKey.append(key.charAt(key.length() - 1));
                         }
                     }
-                    fw.write(" ");
-
-                } else {
-                    StringBuilder sb = new StringBuilder();
                     for (int i = 0; i < piece.length(); i++) {
                         int c = (int) piece.charAt(i);
                         int k = (int) sbKey.charAt(j);
+                        j++;
                         c = c ^ k;
-                        fw.write((char) c);
+                        text.append((char) c);
+                    }
+                } else {
+                    for (int i = 0; i < piece.length(); i++) {
+                        int c = (int) piece.charAt(i);
+                        int k = (int) sbKey.charAt(j);
+                        j++;
+                        c = c ^ k;
+                        text.append((char) c);
                     }
                 }
-                fw.write(" ");
+                text.append(" ");
 
             }
-            fw.write("\n");
+            text.append("\n");
         }
-
-        fw.close();
-        fr.close();
+        return text.toString();
     }
 }

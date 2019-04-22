@@ -1,0 +1,10 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="XorCodeDecode:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/XorCodeDecode_jar</output-path>
+    <root id="archive" name="XorCodeDecode.jar">
+      <element id="module-output" name="XorCodeDecode" />
+      <element id="library" level="project" name="Maven: args4j:args4j:2.33" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/args4j-2.33.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>
