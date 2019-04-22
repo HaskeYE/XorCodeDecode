@@ -50,7 +50,7 @@ public class CoderStream {
         try {
             instance.doMain(str);
         } catch (IOException e) {
-            System.out.println(e);
+            System.out.println("brah");
         }
     }
 
