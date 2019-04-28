@@ -2,67 +2,49 @@ package com.haskeye.coderstream;
 
 import java.io.*;
 
+/**
+ * This class helps to read bytes from the file and write bytes back to file
+ */
 public class FileWorker {
-    public static String read(String fileName) throws FileNotFoundException {
-        //Define file
-        File file = new File(fileName);
-
-        //Init StringBuilder
-        StringBuilder sb = new StringBuilder();
-
-        exists(fileName);
-
+    public static byte[] readFileToByteArray(String file) {
+        FileInputStream fis = null;
+        // Creating a byte array using the length of the file
+        // file.length returns long which is cast to int
+        byte[] bArray = new byte[(int) file.length()];
         try {
-            //Use BufferedReader
-            BufferedReader in = new BufferedReader(new FileReader( file.getAbsoluteFile()));
-            try {
-                String s;
-                while ((s = in.readLine()) != null) {
-                    sb.append(s);
-                    sb.append("\n");
-                }
-            } finally {
-                //Closing file
-                in.close();
-            }
-        } catch(IOException e) {
-            throw new RuntimeException(e);
-        }
+            fis = new FileInputStream(file);
+            fis.read(bArray);
+            fis.close();
 
-        return sb.toString();
+        } catch (IOException ioExp) {
+            ioExp.printStackTrace();
+        }
+        return bArray;
     }
 
-    public static void write(String fileName, String text) {
+    public static void writeBytes(String fileName, byte[] bytes) {
         //Define file
         File file = new File(fileName);
 
         try {
             //Creating new file
-            if(!file.exists()){
+            if (!file.exists()) {
                 file.createNewFile();
             }
-            //New PrintWriter class
-            PrintWriter out = new PrintWriter(file.getAbsoluteFile());
 
-            try {
-                //Writing text into our file
-                out.print(text);
-            } finally {
-                out.close();
-            }
-            //Exception
-        } catch(IOException e) {
-            throw new RuntimeException(e);
+            // Initialize a pointer
+            // in file using OutputStream
+            OutputStream
+                    os
+                    = new FileOutputStream(file);
+
+            // Starts writing the bytes in it
+            os.write(bytes);
+
+            // Close the file
+            os.close();
+        } catch (Exception e) {
+            System.out.println("Exception: " + e);
         }
-    }
-    private static void exists(String fileName) throws FileNotFoundException {
-        File file = new File(fileName);
-        if (!file.exists()){
-            throw new FileNotFoundException(file.getName());
-        }
-    }
-    public static void delete(String nameFile) throws FileNotFoundException {
-        exists(nameFile);
-        new File(nameFile).delete();
     }
 }

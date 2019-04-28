@@ -5,18 +5,21 @@ import org.kohsuke.args4j.CmdLineException;
 import org.kohsuke.args4j.CmdLineParser;
 import org.kohsuke.args4j.Option;
 
-import java.io.Console;
 import java.io.IOException;
+import java.math.BigInteger;
 
+/**
+ * This program xor codes or decodes file and returns coded or decoded one.
+ * Command "-c" initiates coding "-d" decoding respectively.
+ * Program reads byte array and applies xor operation to every byte according to the key.
+ */
 public class CoderStream {
 
     @Option(name = "-c", forbids = "-d", usage = "code")
-    private boolean coding;
-    private String key;
+    private BigInteger key;
 
     @Option(name = "-d", forbids = "-c", usage = "decode")
-    private boolean uncoding;
-    private String keyNew;
+    private BigInteger keyNew;
 
     @Option(name = "-o", usage = "output")
     private String output;
@@ -33,8 +36,8 @@ public class CoderStream {
         }
 
         try {
-            if (coding) FileWorker.write(output, code(FileWorker.read(input), key));
-            else FileWorker.write(output, code(FileWorker.read(input), keyNew));
+            if (key != null) FileWorker.writeBytes(output, code(FileWorker.readFileToByteArray(input), key));
+            else FileWorker.writeBytes(output, code(FileWorker.readFileToByteArray(input), keyNew));
         } catch (Exception e) {
             throw new IllegalArgumentException();
         }
@@ -44,59 +47,27 @@ public class CoderStream {
     public static void main(String[] args) {
         CoderStream instance = new CoderStream();
 
-        Console console = System.console();
-        String[] str = console.readLine().split(" ");
-
         try {
-            instance.doMain(str);
+            instance.doMain(args);
         } catch (IOException e) {
             System.out.println("brah");
         }
     }
 
-    private String code(String file, String key) throws Exception {
+    private byte[] code(byte[] bArray, BigInteger key) throws Exception {
+        //New byte array for output
+        byte[] text = new byte[bArray.length];
 
-        StringBuilder sbKey = new StringBuilder();
-        sbKey.append(key);
+        //Counter to iterate through the bytes of key
+        int i = 0;
 
-        StringBuilder text = new StringBuilder();
+        byte[] keyBytes = key.toByteArray();
+        int keyLength = keyBytes.length;
 
-        String[] strs = file.split("\n");
-
-        for (String str : strs) {
-            String[] pieces = str.split("\\s+");
-            for (String piece : pieces) {
-                int j = 0;
-                sbKey.delete(0, sbKey.length());
-                if (piece.length() > key.length()) {
-                    for (int i = sbKey.length(); i < piece.length(); i++) {
-                        if (i % key.length() != 0) {
-                            sbKey.append(key.charAt(i % key.length()));
-                        } else {
-                            sbKey.append(key.charAt(key.length() - 1));
-                        }
-                    }
-                    for (int i = 0; i < piece.length(); i++) {
-                        int c = (int) piece.charAt(i);
-                        int k = (int) sbKey.charAt(j);
-                        j++;
-                        c = c ^ k;
-                        text.append((char) c);
-                    }
-                } else {
-                    for (int i = 0; i < piece.length(); i++) {
-                        int c = (int) piece.charAt(i);
-                        int k = (int) sbKey.charAt(j);
-                        j++;
-                        c = c ^ k;
-                        text.append((char) c);
-                    }
-                }
-                text.append(" ");
-
-            }
-            text.append("\n");
+        for (int j = 0; j < bArray.length; j++) {
+        text[j] = (byte) (0xff & ( ((int) bArray[j]) ^ ((int) keyBytes[i])));
+        i = (i + 1) % keyLength;
         }
-        return text.toString();
+        return text;
     }
 }
