@@ -1,13 +1,18 @@
 package com.haskeye.coderstream;
 
+import com.sun.istack.internal.NotNull;
+
 import java.io.*;
 
 /**
  * This class helps to read bytes from the file and write bytes back to file
  */
 public class FileWorker {
-    public static byte[] readFileToByteArray(String file) {
-        FileInputStream fis = null;
+    public static byte[] readFileToByteArray(String fileName) {
+        //Define file
+        File file = new File(fileName);
+
+        FileInputStream fis;
         // Creating a byte array using the length of the file
         // file.length returns long which is cast to int
         byte[] bArray = new byte[(int) file.length()];
