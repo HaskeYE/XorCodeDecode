@@ -3,6 +3,7 @@ package com.haskeye.coderstream;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
+
 import java.io.File;
 
 import static com.haskeye.coderstream.CoderStream.code;
@@ -13,9 +14,9 @@ class CoderStreamTest {
         byte[] input = FileWorker.readFileToByteArray("first.txt");
         byte[] coded = code(input, "F342A4824C");
         FileWorker.writeBytes("Third.txt", code(coded, "F342A4824C"));
-        File fileFirst = new File("First.txt");
+        File fileFirst = new File("first.txt");
         File fileNew = new File("Third.txt");
-        Assertions.assertEquals(fileFirst, fileNew);
+        Assertions.assertEquals(true, fileFirst.equals(fileNew));
     }
 
     @Test
